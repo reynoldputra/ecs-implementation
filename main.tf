@@ -23,3 +23,7 @@ module "ecr" {
     "environment" = "dev"
   }
 }
+
+module "network" {
+  source = "./modules/network"
+}
