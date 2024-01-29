@@ -24,6 +24,17 @@ module "ecr" {
   }
 }
 
+# all network configuration
 module "network" {
   source = "./modules/network"
 }
+
+# TODO: setup policy
+module "policy" {
+  source = "./modules/policy"
+}
+
+# TODO: setup ecs task definition
+# TODO: setup ecs service
+# TODO: setup load balancer
+# TODO: setup database

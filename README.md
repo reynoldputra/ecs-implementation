@@ -14,6 +14,14 @@ Notes : The main goals for this project are to explore the use of AWS ECS with T
 - Configure your docker account
 
 ### How to run
+#### Create ECR (Elastic Container repository)
+Run this command to apply infrastructure for ECR only
+```bash
+ terraform plan -target=module.ecr.aws_ecr_repository.ecr
+ terraform apply -target=module.ecr.aws_ecr_repository.ecr
+````
+
+ `-target` will specify a resource to be created 
 #### Push image to repository
 - Build image
 ```bash
