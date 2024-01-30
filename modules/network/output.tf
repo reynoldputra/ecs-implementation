@@ -21,3 +21,19 @@ output "private_subnet_id" {
 output "public_subnet_id" {
   value = aws_subnet.public_a.id
 }
+
+output "public_eip" {
+  value = aws_eip.nat_eip.public_ip
+}
+
+output "private_eip" {
+  value = aws_eip.nat_eip.private_ip
+}
+
+output "vpc_id" {
+  value = aws_vpc.app_vpc.id
+}
+
+output "igw" {
+  value = aws_internet_gateway.igw
+}

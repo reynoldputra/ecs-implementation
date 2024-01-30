@@ -1,3 +1,7 @@
-output "ecr_modul_repo_url" {
-  value = module.ecr.ecr_repository_url
+output "network_public_eip" {
+  value = module.network.public_eip
+}
+
+output "network_private_eip" {
+  value = module.network.private_eip
 }
