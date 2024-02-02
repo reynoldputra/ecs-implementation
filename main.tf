@@ -39,7 +39,7 @@ module "ecs" {
   aws_role_task_def_arn = module.policy.simple_shop_task_execution_role_arn
 
   subnets = [
-    module.network.private_subnet_id
+    module.network.public_subnet_id
   ]
 
   sec_groups = [

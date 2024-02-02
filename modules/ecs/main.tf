@@ -51,7 +51,7 @@ resource "aws_ecs_service" "simple_shop" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    assign_public_ip = false
+    assign_public_ip = true
 
     security_groups = var.sec_groups
     subnets         = var.subnets
