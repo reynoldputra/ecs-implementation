@@ -28,3 +28,8 @@ variable "sec_groups" {
   default     = []
 }
 
+variable "alb_target_group_arn" {
+  description = "ALB target group for ecs service"
+  type        = string
+  default     = null
+}

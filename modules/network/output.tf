@@ -14,20 +14,28 @@ output "sg_ingress_https" {
   value = aws_security_group.https.id
 }
 
-output "private_subnet_id" {
+output "private_a_subnet_id" {
   value = aws_subnet.private_a.id
 }
 
-output "public_subnet_id" {
+output "private_b_subnet_id" {
+  value = aws_subnet.private_b.id
+}
+
+output "public_a_subnet_id" {
   value = aws_subnet.public_a.id
 }
 
-output "public_eip" {
-  value = aws_eip.nat_eip.public_ip
+output "public_b_subnet_id" {
+  value = aws_subnet.public_b.id
 }
 
-output "private_eip" {
-  value = aws_eip.nat_eip.private_ip
+output "nat_eip_id" {
+  value = aws_eip.nat_eip.id
+}
+
+output "private_ngw_id" {
+  value = aws_nat_gateway.ngw.id
 }
 
 output "vpc_id" {

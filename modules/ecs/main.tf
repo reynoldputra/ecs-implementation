@@ -9,14 +9,14 @@ resource "aws_cloudwatch_log_group" "simple_shop_log" {
 }
 
 resource "aws_ecs_task_definition" "task_def_simple_shop" {
-  family = "simple_shop_rest"
+  family = "simple-shop"
 
   execution_role_arn = var.aws_role_task_def_arn
 
   container_definitions = jsonencode([
     {
-      "name" : "simple_shop_rest",
-      "image" : var.image_url,
+      "image" : "${var.image_url}:latest",
+      "name" : "simple-shop",
       "portMappings" : [
         {
           "containerPort" : var.port
@@ -45,15 +45,24 @@ resource "aws_ecs_task_definition" "task_def_simple_shop" {
 
 ## service
 resource "aws_ecs_service" "simple_shop" {
-  name            = "simple_shope"
+  name            = "simple-shop"
   task_definition = aws_ecs_task_definition.task_def_simple_shop.arn
   cluster         = aws_ecs_cluster.simple_shop_rest.id
   launch_type     = "FARGATE"
+  desired_count   = 1
 
   network_configuration {
-    assign_public_ip = true
+    assign_public_ip = false
 
     security_groups = var.sec_groups
     subnets         = var.subnets
   }
+
+  load_balancer {
+    target_group_arn = var.alb_target_group_arn
+    container_name   = "simple-shop"
+    container_port   = 5000
+  }
+
+  depends_on = [aws_ecs_task_definition.task_def_simple_shop]
 }

@@ -39,31 +39,36 @@ module "ecs" {
   aws_role_task_def_arn = module.policy.simple_shop_task_execution_role_arn
 
   subnets = [
-    module.network.public_subnet_id
+    module.network.private_a_subnet_id,
+    module.network.private_b_subnet_id
   ]
 
   sec_groups = [
     module.network.sg_ingress_api_id,
     module.network.sg_egress_all_id,
   ]
+
+  alb_target_group_arn = module.alb.alb_target_group_arn
 }
 
-# TODO: alb for auto scale
-# module "alb" {
-#   source = "./modules/alb"
-#
-#   vpc_id = module.network.vpc_id
-#   subnets = [
-#     module.network.public_subnet_id
-#   ]
-#
-#   sec_groups = [
-#     module.network.sg_ingress_http,
-#     module.network.sg_egress_all_id,
-#     module.network.sg_ingress_https
-#   ]
-#
-#   aws_alb_dependencies = module.network.igw
-# }
+# TODO : alb for auto scale
+# TODO : 503 Service Temporarily Unavailable
+module "alb" {
+  source = "./modules/alb"
+
+  vpc_id = module.network.vpc_id
+  subnets = [
+    module.network.public_a_subnet_id,
+    module.network.public_b_subnet_id
+  ]
+
+  sec_groups = [
+    module.network.sg_ingress_http,
+    module.network.sg_egress_all_id,
+    module.network.sg_ingress_https
+  ]
+
+  aws_alb_dependencies = module.network.igw
+}
 
 # TODO: setup database

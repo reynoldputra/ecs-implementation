@@ -1,24 +1,25 @@
 resource "aws_vpc" "app_vpc" {
   cidr_block = "10.0.0.0/16"
 }
+
+# public subnet
 resource "aws_subnet" "public_a" {
   vpc_id            = aws_vpc.app_vpc.id
   cidr_block        = "10.0.0.0/25"
   availability_zone = "ap-southeast-1a"
-
 
   tags = {
     "Name" = "public | ap-southeast-1a"
   }
 }
 
-resource "aws_subnet" "private_a" {
+resource "aws_subnet" "public_b" {
   vpc_id            = aws_vpc.app_vpc.id
   cidr_block        = "10.0.1.0/25"
-  availability_zone = "ap-southeast-1a"
+  availability_zone = "ap-southeast-1b"
 
   tags = {
-    "Name" = "public | ap-southeast-1a"
+    "Name" = "public | ap-southeast-1b"
   }
 }
 
@@ -29,29 +30,28 @@ resource "aws_route_table" "public" {
   }
 }
 
-resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.app_vpc.id
-  tags = {
-    "Name" = "private"
-  }
-}
-
 resource "aws_route_table_association" "public_a_subnet" {
   route_table_id = aws_route_table.public.id
   subnet_id      = aws_subnet.public_a.id
 }
 
-resource "aws_route_table_association" "private_a_subnet" {
-  route_table_id = aws_route_table.private.id
-  subnet_id      = aws_subnet.private_a.id
-}
-
-resource "aws_eip" "nat_eip" {
-  domain = "vpc"
+resource "aws_route_table_association" "public_b_subnet" {
+  route_table_id = aws_route_table.public.id
+  subnet_id      = aws_subnet.public_b.id
 }
 
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.app_vpc.id
+}
+
+resource "aws_route" "public_igw" {
+  route_table_id         = aws_route_table.public.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.igw.id
+}
+
+resource "aws_eip" "nat_eip" {
+  domain = "vpc"
 }
 
 resource "aws_nat_gateway" "ngw" {
@@ -61,10 +61,43 @@ resource "aws_nat_gateway" "ngw" {
   depends_on = [aws_internet_gateway.igw]
 }
 
-resource "aws_route" "public_igw" {
-  route_table_id         = aws_route_table.public.id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.igw.id
+
+# private subnet
+resource "aws_subnet" "private_a" {
+  vpc_id            = aws_vpc.app_vpc.id
+  cidr_block        = "10.0.0.128/25"
+  availability_zone = "ap-southeast-1a"
+
+  tags = {
+    "Name" = "public | ap-southeast-1a"
+  }
+}
+
+resource "aws_subnet" "private_b" {
+  vpc_id            = aws_vpc.app_vpc.id
+  cidr_block        = "10.0.1.128/25"
+  availability_zone = "ap-southeast-1b"
+
+  tags = {
+    "Name" = "public | ap-southeast-1b"
+  }
+}
+
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.app_vpc.id
+  tags = {
+    "Name" = "private"
+  }
+}
+
+resource "aws_route_table_association" "private_a_subnet" {
+  route_table_id = aws_route_table.private.id
+  subnet_id      = aws_subnet.private_a.id
+}
+
+resource "aws_route_table_association" "private_b_subnet" {
+  route_table_id = aws_route_table.private.id
+  subnet_id      = aws_subnet.private_b.id
 }
 
 resource "aws_route" "private_ngw" {
@@ -72,6 +105,8 @@ resource "aws_route" "private_ngw" {
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_nat_gateway.ngw.id
 }
+
+# security groups
 
 resource "aws_security_group" "http" {
   name        = "http"
