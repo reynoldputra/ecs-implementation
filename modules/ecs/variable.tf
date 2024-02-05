@@ -1,3 +1,7 @@
+locals {
+  cw_log_name = "/ecs/simple-shop-rest-log"
+}
+
 variable "image_url" {
   description = "Base image for create container"
   type        = string

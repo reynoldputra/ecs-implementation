@@ -3,9 +3,11 @@ resource "aws_ecs_cluster" "simple_shop_rest" {
   name = "simple_shop_rest"
 }
 
+# TODO : add mongo db container
+
 ## task definition
 resource "aws_cloudwatch_log_group" "simple_shop_log" {
-  name = "/ecs/simple-shop-log"
+  name = local.cw_log_name
 }
 
 resource "aws_ecs_task_definition" "task_def_simple_shop" {
@@ -24,13 +26,14 @@ resource "aws_ecs_task_definition" "task_def_simple_shop" {
       ],
       "environment" : [
         { "name" : "PORT", "value" : "5000" },
-        { "name" : "HOST", "value" : "0.0.0.0" }
+        { "name" : "HOST", "value" : "0.0.0.0" },
+        { "name" : "MONGO_URI", "value" : "mongodb://mongo:27017/azure-function-testing" }
       ],
       "logConfiguration" : {
         "logDriver" : "awslogs",
         "options" : {
-          "awslogs-region" : "ap-southeast-1a",
-          "awslogs-group" : aws_cloudwatch_log_group.simple_shop_log.name,
+          "awslogs-region" : "ap-southeast-1",
+          "awslogs-group" : local.cw_log_name,
           "awslogs-stream-prefix" : "ecs"
         }
       }
@@ -41,6 +44,8 @@ resource "aws_ecs_task_definition" "task_def_simple_shop" {
   memory                   = 512
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
+
+  depends_on = [aws_cloudwatch_log_group.simple_shop_log]
 }
 
 
