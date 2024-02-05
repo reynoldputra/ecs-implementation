@@ -9,11 +9,13 @@ resource "aws_alb" "simple_shop" {
 }
 
 resource "aws_alb_target_group" "alb_target_simple_shop" {
-  name        = "simple-shop"
+  name        = "simple-shop-target"
   port        = 5000
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = var.vpc_id
+
+  depends_on = [aws_alb.simple_shop]
 }
 
 resource "aws_alb_listener" "simple_shop_http" {

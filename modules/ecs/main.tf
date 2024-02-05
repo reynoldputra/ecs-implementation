@@ -23,7 +23,8 @@ resource "aws_ecs_task_definition" "task_def_simple_shop" {
         }
       ],
       "environment" : [
-        { "name" : "PORT", "value" : "5000" }
+        { "name" : "PORT", "value" : "5000" },
+        { "name" : "HOST", "value" : "0.0.0.0" }
       ],
       "logConfiguration" : {
         "logDriver" : "awslogs",
